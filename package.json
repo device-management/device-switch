@@ -1,6 +1,6 @@
 {
   "name": "@device-management/device-switch",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Represents power switch software using ARM devices. ",
   "license": "MIT",
   "repository": "https://github.com/device-management/device-switch",
@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "onoff": "1.1.2",
-    "@device-management/device-base": "0.0.1"
+    "@device-management/device-base": "0.1.0"
   },
   "devDependencies": {
     "@types/node": "7.0.21",

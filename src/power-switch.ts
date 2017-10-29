@@ -7,19 +7,12 @@ export namespace DeviceManager {
 
         private out: Gpio;
 
-        constructor(
-            mqttConfig: MqttConfig,
-            deviceDescription: DeviceDescription,
-            private powerSwitchConfig: PowerSwitchConfig) {
-            super(mqttConfig, deviceDescription);
-        }
-
         doStart(): Observable<any> {
-            this.out = new Gpio(this.powerSwitchConfig.pin, "out");
-            this.out.writeSync(this.deviceDescription.properties.isActive ? 0 : 1);
+            this.out = new Gpio(this.device.configuration.pin, "out");
+            this.out.writeSync(this.device.state.isActive ? 0 : 1);
             let start = super.doStart();
             start.subscribe(() => { }, () => { }, () => {
-                let topic = "devices/" + this.deviceDescription.deviceId + "/command";
+                let topic = "devices/" + this.device.id + "/command";
                 console.log("Subscribing topic: " + topic);
                 this.mqttClient.subscribe(topic);
             });
@@ -30,20 +23,20 @@ export namespace DeviceManager {
             let self = this;
             return (topic, message) => {
                 console.log("Recived message from mqtt. Topic: " + topic + ", Message: " + message);
-                if (topic == "devices/" + self.deviceDescription.deviceId + "/command") {
+                if (topic == "devices/" + self.device.id + "/command") {
                     var command = JSON.parse(message);
-                    if (command.properties.hasOwnProperty("isActive")) {
-                        self.out.write(command.properties.isActive ? 0 : 1, (error, value) => {
+                    if (command.state.hasOwnProperty("isActive")) {
+                        self.out.write(command.state.isActive ? 0 : 1, (error, value) => {
                             if (error) {
                                 console.log("Cannot change value on GPIO.");
                                 console.log(error);
                             } else {
                                 self.mqttClient.publish(
-                                    "devices/" + self.deviceDescription.deviceId + "/state",
+                                    "devices/" + self.device.id + "/state",
                                     JSON.stringify({
-                                        deviceId: self.deviceDescription.deviceId,
+                                        deviceId: self.device.id,
                                         properties: {
-                                            isActive: command.properties.isActive
+                                            isActive: command.state.isActive
                                         }
                                     }),
                                     {
@@ -56,9 +49,5 @@ export namespace DeviceManager {
                 }
             }
         }
-    }
-
-    export interface PowerSwitchConfig {
-        pin: number;
     }
 }

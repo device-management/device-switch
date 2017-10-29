@@ -11,16 +11,16 @@ let powerSwitch = new DeviceManager.PowerSwitch(
         brokerAddress: mqttAddress
     },
     {
-        deviceId: deviceId,
-        properties: {
-            name: deviceName,
-            type: deviceType,
+        id: deviceId,
+        name: deviceName,
+        type: deviceType,
+        configuration: {
+            pin: pinNumber
+        },
+        state: {
             isOnline: true,
             isActive: false
         }
-    }, 
-    {
-        pin: pinNumber
     }
 );
 
